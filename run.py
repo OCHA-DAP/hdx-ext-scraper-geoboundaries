@@ -45,7 +45,6 @@ def main():
                 dataset.create_in_hdx(
                     remove_additional_resources=True,
                     hxl_update=False,
-                    updated_by_script="GeoBoundaries",
                     batch=info["batch"],
                 )
                 logger.info("Debugging line 2")

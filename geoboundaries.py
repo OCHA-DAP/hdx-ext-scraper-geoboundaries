@@ -13,7 +13,7 @@ from hdx.data.hdxobject import HDXError
 from hdx.data.resource import Resource
 from hdx.location.country import Country
 from hdx.utilities.dictandlist import dict_of_lists_add
-from hdx.utilities.path import get_filename_from_url
+from hdx.utilities.url import get_filename_from_url
 from slugify import slugify
 
 logger = logging.getLogger(__name__)
@@ -67,7 +67,7 @@ def generate_dataset(countryiso3, admin_boundaries):
     def add_resource(key, description, filetype="geojson"):
         name, url = get_name_url(admin_boundary[key])
         resource = Resource({"name": name, "url": url, "description": description})
-        resource.set_file_type(filetype)
+        resource.set_format(filetype)
         resource_names.append(name)
         dataset.add_update_resource(resource)
 
@@ -80,7 +80,9 @@ def generate_dataset(countryiso3, admin_boundaries):
         dataset_years.add(admin_boundary["boundaryYearRepresented"].replace(".0", ""))
         logger.info(f"Printing all_hdx variable: {all_hdx}")
         logger.info(f"Admin Boundary: {admin_boundary}")
-        source = admin_boundary["boundarySource"]
+        source = admin_boundary["boundarySource-1"]
+        sources.append(source)
+        source = admin_boundary["boundarySource-2"]
         sources.append(source)
         logger.info(f"printing dataset sources: {source}")
         boundarytype = admin_boundary["boundaryType"]
@@ -97,7 +99,7 @@ def generate_dataset(countryiso3, admin_boundaries):
             "tjDownloadURL", f"TopoJSON {boundarytype} boundaries for {countryname}"
         )
         add_resource(
-            "staticDownloadLink",
+            "downloadURL",
             f"Other formats including shape file {boundarytype} boundaries for {countryname}",
             "shp",
         )
@@ -111,7 +113,7 @@ def generate_dataset(countryiso3, admin_boundaries):
     else:
         dataset.set_subnational(True)
     dataset_years = sorted(dataset_years)
-    dataset.set_reference_period_year_range(dataset_years[0], dataset_years[-1])
+    dataset.set_time_period_year_range(dataset_years[0], dataset_years[-1])
     logger.info("CHecking line 1")
     dataset["dataset_source"] = "".join(sorted(sources))
     logger.info("CHecking line 2")
